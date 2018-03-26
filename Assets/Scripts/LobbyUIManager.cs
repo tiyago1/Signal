@@ -13,6 +13,15 @@ public class LobbyUIManager : MonoBehaviour
     public GameObject Levels;
     public GameObject Main;
 
+    private void Awake()
+    {
+#if UNITY_STANDALONE
+        this.gameObject.SetActive(this.gameObject.name == "DesktopCanvas");
+#elif UNITY_ANDROID
+        this.gameObject.SetActive(this.gameObject.name == "MobileCanvas");
+#endif
+    }
+
     private void Start()
     {
         DOTween.Init();
@@ -25,12 +34,12 @@ public class LobbyUIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TabToPlayText.transform.DOShakeScale(1);
-            TabToPlayText.DOColor(Random.ColorHSV(0, 1, 1, 1, 1, 1),1);
+            TabToPlayText.DOColor(Random.ColorHSV(0, 1, 1, 1, 1, 1), 1);
         }
 
         if (Input.GetMouseButton(0))
         {
-          //  SceneManager.LoadScene(1);
+            //  SceneManager.LoadScene(1);
         }
     }
 
