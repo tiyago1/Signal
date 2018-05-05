@@ -3,32 +3,39 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class SplitterWall : Wall
+
+namespace Signal
 {
-    private bool mIsActive;
-
-    public override void OnCollisionDetection()
+    public class SplitterWall : Wall
     {
-        Debug.LogError("This wall isTrigger false!");
-    }
+        private bool mIsActive;
 
-    public override void OnTriggerEnterDetection()
-    {
-        GameManager.Instance.CreateSplitter();
-        mSpriteRenderer.color = Color.cyan;
+        public override void OnCollisionDetection()
+        {
+            Debug.LogError("This wall isTrigger false!");
+        }
 
-        StartCoroutine(WaitAndWorkCoroutine());
-    }
+        public override void OnTriggerEnterDetection()
+        {
+            GameManager.Instance.CreateSplitter(mCollisionDetectedPosition);
+            mSpriteRenderer.color = Color.cyan;
 
-    private IEnumerator WaitAndWorkCoroutine()
-    {
-        mCollider.enabled = false;
-        mSpriteRenderer.DOFade(0.2f, 1.0f);
-        yield return new WaitForSeconds(1.0f);
+            StartCoroutine(WaitAndWorkCoroutine());
+        }
 
-        mSpriteRenderer.DOFade(1.0f, 1.0f);
-        mSpriteRenderer.DOColor(Color.gray, 1.0f);
-        mCollider.enabled = true;
-        StopCoroutine(WaitAndWorkCoroutine());
+        private IEnumerator WaitAndWorkCoroutine()
+        {
+            mCollider.enabled = false;
+            mSpriteRenderer.DOColor(Color.gray, 1.4f);
+            mSpriteRenderer.DOFade(0.2f, 1.4f);
+
+            yield return new WaitForSeconds(1.4f);
+
+            mSpriteRenderer.DOColor(Color.cyan, 1.0f);
+            mSpriteRenderer.DOFade(1.0f, 1.0f);
+            mCollider.enabled = true;
+
+            StopCoroutine(WaitAndWorkCoroutine());
+        }
     }
 }

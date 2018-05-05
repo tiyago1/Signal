@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class fill : MonoBehaviour
 {
-
-
     EdgeCollider2D pc2;
     void Start()
     {

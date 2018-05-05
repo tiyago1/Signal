@@ -5,42 +5,49 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public abstract class Wall : MonoBehaviour
+namespace Signal
 {
-    protected SpriteRenderer mSpriteRenderer;
-    protected EdgeCollider2D mCollider;
-    protected ConstantForce2D mConstantForce;
-    protected Rigidbody2D mRigidBody;
-
-    private void Awake()
+    public abstract class Wall : MonoBehaviour
     {
-        mSpriteRenderer = this.GetComponent<SpriteRenderer>();
-        mCollider = this.GetComponent<EdgeCollider2D>();
-        mConstantForce = this.GetComponent<ConstantForce2D>();
-        mRigidBody = this.GetComponent<Rigidbody2D>();
-        
-        if (mSpriteRenderer == null)
-            mSpriteRenderer = this.GetComponentInParent<SpriteRenderer>();
-    }
+        protected SpriteRenderer mSpriteRenderer;
+        protected EdgeCollider2D mCollider;
+        protected ConstantForce2D mConstantForce;
+        protected Rigidbody2D mRigidBody;
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.collider.tag == "Signal" || collision.collider.tag == "SignalCopy")
+        protected Vector3 mCollisionDetectedPosition;
+
+        private void Awake()
         {
-            OnCollisionDetection();
-            AudioManager.Instance.FireHitSound();
-        }
-    }
+            mSpriteRenderer = this.GetComponent<SpriteRenderer>();
+            mCollider = this.GetComponent<EdgeCollider2D>();
+            mConstantForce = this.GetComponent<ConstantForce2D>();
+            mRigidBody = this.GetComponent<Rigidbody2D>();
 
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.tag == "Signal")
+            if (mSpriteRenderer == null)
+                mSpriteRenderer = this.GetComponentInParent<SpriteRenderer>();
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            OnTriggerEnterDetection();
-            AudioManager.Instance.FireHitSound();
+            if (collision.collider.tag == "Signal" || collision.collider.tag == "SignalCopy")
+            {
+                mCollisionDetectedPosition = collision.transform.position;
+                OnCollisionDetection();
+                AudioManager.Instance.PlayClip(Constants.SoundType.SignalCollision);
+            }
         }
-    }
 
-    public abstract void OnCollisionDetection();
-    public abstract void OnTriggerEnterDetection();
+        private void OnTriggerEnter2D(Collider2D collider)
+        {
+            if (collider.tag == "Signal")
+            {
+                mCollisionDetectedPosition = collider.transform.position;
+                OnTriggerEnterDetection();
+                AudioManager.Instance.PlayClip(Constants.SoundType.SignalCollision);
+            }
+        }
+
+        public abstract void OnCollisionDetection();
+        public abstract void OnTriggerEnterDetection();
+    }
 }

@@ -3,16 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SignalPlusserWall : Wall
+namespace Signal
 {
-    public override void OnCollisionDetection()
+    public class SignalPlusserWall : Wall
     {
-        GameManager.Instance.SetSignalLevel(true);
-        mSpriteRenderer.color = new Color(0.5f, 0.5f, 0);
-    }
+        public override void OnCollisionDetection()
+        {
+            GameManager.Instance.SetSignalLevel(true);
+            mSpriteRenderer.color = new Color(0.5f, 0.5f, 0);
+        }
 
-    public override void OnTriggerEnterDetection()
-    {
-        Debug.LogError("This wall isTrigger true!");
+        public override void OnTriggerEnterDetection()
+        {
+            Debug.LogError("This wall isTrigger true!");
+        }
     }
 }

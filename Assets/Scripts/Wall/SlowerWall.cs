@@ -3,16 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlowerWall : Wall
+namespace Signal
 {
-    public override void OnCollisionDetection()
+    public class SlowerWall : Wall
     {
-        GameManager.Instance.SetSignalVelocity(false);
-        mSpriteRenderer.color = Color.red;
-    }
+        public override void OnCollisionDetection()
+        {
+            GameManager.Instance.SetSignalVelocity(false);
+            mSpriteRenderer.color = Color.red;
+        }
 
-    public override void OnTriggerEnterDetection()
-    {
-        Debug.LogError("This wall isTrigger true!");
+        public override void OnTriggerEnterDetection()
+        {
+            Debug.LogError("This wall isTrigger true!");
+        }
     }
 }
