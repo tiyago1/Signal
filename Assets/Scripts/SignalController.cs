@@ -13,59 +13,32 @@ namespace Signal
         private Vector2 mForceVector;
         private CircleCollider2D mCircleCollider;
 
-
         [Header("Effects")]
         public ParticleSystem ExplosionEffect;
         public ParticleSystem ExplosionEffectCopy;
 
-
-        //public Vector3[] Paths;
-        private Vector3[] Paths = new Vector3[11]
-        {
-        new Vector3(0.0f,1.0f,0.0f),
-        new Vector3(0.5f,1.0f,0.0f),
-        new Vector3(0.0f,0.5f,0.0f),
-        new Vector3(-1.0f,0.0f,0.0f),
-        new Vector3(-0.5f,-0.5f,0.0f),
-        new Vector3(0.0f,-1.0f,0.0f),
-        new Vector3(0.5f,-0.5f,0.0f),
-        new Vector3(1.0f,0.0f,0.0f),
-        new Vector3(0.0f,0.5f,0.0f),
-        new Vector3(0.5f,1.0f,0.0f),
-        new Vector3(0.0f,1.0f,0.0f)
-        };
+        private Vector3[] Paths;
 
         public float duration;
 
         #endregion
 
+        #region Unity Methods
         private void Awake()
         {
-            mRigidbody = this.GetComponent<Rigidbody2D>();
-            mCircleCollider = this.GetComponent<CircleCollider2D>();
-            //Pathss = new Vector3[11]
-            //{
-            //    new Vector3(0.0f,1.0f,0.0f),
-            //    new Vector3(0.5f,1.0f,0.0f),
-            //    new Vector3(0.0f,0.5f,0.0f),
-            //    new Vector3(-1.0f,0.0f,0.0f),
-            //    new Vector3(-0.5f,-0.5f,0.0f),
-            //    new Vector3(0.0f,-1.0f,0.0f),
-            //    new Vector3(0.5f,-0.5f,0.0f),
-            //    new Vector3(1.0f,0.0f,0.0f),
-            //    new Vector3(0.0f,0.5f,0.0f),
-            //    new Vector3(0.5f,1.0f,0.0f),
-            //    new Vector3(0.0f,1.0f,0.0f)
-            //};
+            Init();
         }
-
-        void Update()
+        private void Update()
         {
             if (Input.GetKeyDown(KeyCode.G))
             {
                 this.transform.DOPath(Paths, duration);
             }
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void Move(Vector2 direction)
         {
@@ -103,11 +76,11 @@ namespace Signal
                 this.transform.DOPath(Paths, duration);
                 yield return new WaitForSeconds(duration);
             }
+
             Time.timeScale = 0.5f;
             this.transform.position = new Vector3(0.0f, 0.0f, 0.0f);
             StopCoroutine(IdleAnimationCoroutine());
         }
-
 
         public void Reset()
         {
@@ -115,23 +88,32 @@ namespace Signal
             this.gameObject.SetActive(false);
         }
 
+        #endregion
+
+        #region Private Methods
+        private void Init()
+        {
+            mRigidbody = this.GetComponent<Rigidbody2D>();
+            mCircleCollider = this.GetComponent<CircleCollider2D>();
+
+            Paths = new Vector3[11]
+            {
+                new Vector3(0.0f,1.0f,0.0f),
+                new Vector3(0.5f,1.0f,0.0f),
+                new Vector3(0.0f,0.5f,0.0f),
+                new Vector3(-1.0f,0.0f,0.0f),
+                new Vector3(-0.5f,-0.5f,0.0f),
+                new Vector3(0.0f,-1.0f,0.0f),
+                new Vector3(0.5f,-0.5f,0.0f),
+                new Vector3(1.0f,0.0f,0.0f),
+                new Vector3(0.0f,0.5f,0.0f),
+                new Vector3(0.5f,1.0f,0.0f),
+                new Vector3(0.0f,1.0f,0.0f)
+            };
+        }
+
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision.collider.tag == "Target")
-            {
-                GameManager.Instance.LevelFinished();
-            }
-
-            if (collision.collider.tag == "Signal")
-            {
-                this.GetComponent<CircleCollider2D>().isTrigger = true;
-                Debug.Log("Singal a çarptı");
-            }
-            else
-            {
-
-            }
-
             if (this.tag == "Signal")
             {
                 ExplosionEffect.transform.position = this.transform.position;
@@ -142,16 +124,13 @@ namespace Signal
                 ExplosionEffectCopy.transform.position = this.transform.position;
                 ExplosionEffectCopy.Play();
             }
-        }
 
-        private void OnTriggerExit2D(Collider2D collider)
-        {
-            if (collider.tag == "Signal")
+            if (!GameManager.Instance.IsCurrentLevelFinished && collision.collider.tag == "Target")
             {
-                this.GetComponent<CircleCollider2D>().isTrigger = false;
-                Debug.Log("Singal a çıktı");
+                GameManager.Instance.LevelFinished();
             }
         }
-    }
 
+        #endregion
+    }
 }

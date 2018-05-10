@@ -42,6 +42,7 @@ namespace Signal
         public SignalController SignalCopy;
         public CircleCollider2D CenterPointCollider;
         public bool IsPlaying;
+        public bool IsCurrentLevelFinished;
         public int Level = -1;
 
         public List<Level> Levels;
@@ -57,7 +58,6 @@ namespace Signal
             mGameManager = this;
             NextLevel();
             Invoke("CenterTest", 1.0f);
-            //ActivaterCenterPoint();
         }
 
         private void CenterTest()
@@ -79,12 +79,7 @@ namespace Signal
                 var distance = heading.magnitude;
                 Vector2 direction = heading / distance;
                 Signal.Move(direction);
-                //Invoke("ActivaterCenterPoint", 0.4f);
             }
-            //else
-            //{
-            //    StartCoroutine(ActivaterCenterPoint());
-            //}
 
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
@@ -102,6 +97,7 @@ namespace Signal
 
         public void LevelFinished()
         {
+            IsCurrentLevelFinished = true;
             Debug.Log("<<LevelFinished>>");
             StartCoroutine(LevelTransition());
         }
@@ -123,8 +119,9 @@ namespace Signal
 
         public void LevelSetupCompleted()
         {
+            Signal.enabled = true;
+            SignalCopy.enabled = true;
             Signal.gameObject.SetActive(true);
-            Debug.Log("Z");
             StartCoroutine(Signal.IdleAnimationCoroutine());
         }
 
@@ -136,6 +133,8 @@ namespace Signal
         {
             Debug.LogError("Game Finished");
             Time.timeScale = TIME_SCALE_MOTION;
+            Signal.enabled = false;
+            SignalCopy.enabled = false;
             yield return new WaitForSeconds(0.2f);
             IsPlaying = false;
             Signal.Reset();
@@ -149,6 +148,7 @@ namespace Signal
 
         private void NextLevel()
         {
+            IsCurrentLevelFinished = false;
             Level++;
             UIManager.Instance.LevelText.text = Level.ToString();
             Levels[Level].Show();
@@ -156,7 +156,6 @@ namespace Signal
 
         private IEnumerator ActivaterCenterPoint()
         {
-            Debug.Log("IsPlaying" + IsPlaying);
             while (IsPlaying)
             {
                 yield return new WaitForSeconds(1.0f);
