@@ -29,8 +29,10 @@ namespace Signal
         public Image SignalLevelImage;
         public Text LevelText;
 
+        public WinLosePanel WinLosePanel;
+
         private float lerpValue = 1.0f;
-        private float timeElapsedValue = 0.05f;
+        private float timeElapsedValue = 0.1f; //0.05f;
         private float t;
 
         #endregion
@@ -54,12 +56,10 @@ namespace Signal
                 }
                 else
                 {
+                    GameManager.Instance.CurrentLevelIsWon = false;
+                    GameManager.Instance.LevelFinished();
                     Time.timeScale = GameManager.TIME_SCALE_MOTION;
                 }
-            }
-            else
-            {
-                SignalLevelImage.fillAmount = 1.0f;
             }
 
             if (Input.GetKeyDown(KeyCode.Z))
@@ -89,6 +89,20 @@ namespace Signal
             Time.timeScale = GameManager.TIME_SCALE_DEFAULT;
             UnityEngine.SceneManagement.SceneManager.LoadScene(1);
             Time.timeScale = GameManager.TIME_SCALE_DEFAULT;
+        }
+
+        public void ShowWinLoseAlert(bool isWon)
+        {
+            ResetSignalColor();
+            WinLosePanel.Show(isWon);
+        }
+
+
+        public void ResetSignalColor()
+        {
+            lerpValue = 1.0f;
+            SignalLevelImage.fillAmount = lerpValue;
+            SetSignalLevelColor();
         }
 
         #endregion

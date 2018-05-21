@@ -71,6 +71,7 @@ namespace Signal
 
         public IEnumerator IdleAnimationCoroutine()
         {
+            Debug.Log("GameManager.Instance.IsPlaying : " + GameManager.Instance.IsPlaying);
             while (!GameManager.Instance.IsPlaying)
             {
                 this.transform.DOPath(Paths, duration);
@@ -127,6 +128,7 @@ namespace Signal
 
             if (!GameManager.Instance.IsCurrentLevelFinished && collision.collider.tag == "Target")
             {
+                GameManager.Instance.CurrentLevelIsWon = true;
                 GameManager.Instance.LevelFinished();
             }
         }

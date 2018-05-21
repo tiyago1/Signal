@@ -43,7 +43,8 @@ namespace Signal
         public CircleCollider2D CenterPointCollider;
         public bool IsPlaying;
         public bool IsCurrentLevelFinished;
-        public int Level = -1;
+        public bool CurrentLevelIsWon;
+        public int Level;
 
         public List<Level> Levels;
 
@@ -55,40 +56,30 @@ namespace Signal
 
         private void Start()
         {
-            mGameManager = this;
-            NextLevel();
-            Invoke("CenterTest", 1.0f);
-        }
-
-        private void CenterTest()
-        {
-            CenterPointCollider.GetComponent<SpriteRenderer>().DOColor(Color.white, 0.5f);
-            CenterPointCollider.GetComponent<SpriteRenderer>().DOFade(1, 0.5f);
+            Initialize();
         }
 
         private void Update()
         {
-            if (!IsPlaying && Input.GetMouseButtonDown(0))
+            if (!IsCurrentLevelFinished && !IsPlaying && Input.GetMouseButtonDown(0))
             {
+                
                 IsPlaying = true;
-                StartCoroutine(ActivaterCenterPoint());
                 Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 Vector2 centerPosition = new Vector2(CenterPoint.position.x, CenterPoint.position.y);
-
                 Vector2 heading = position - centerPosition;
                 var distance = heading.magnitude;
                 Vector2 direction = heading / distance;
                 Signal.Move(direction);
+                StartCoroutine(ActivaterCenterPoint());
             }
+        }
 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                Levels[0].Show();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                Levels[0].Hide();
-            }
+        private void Initialize()
+        {
+            mGameManager = this;
+            Level = 0;
+            ShowLevelState(Constants.LevelState.Load);
         }
 
         #endregion
@@ -98,6 +89,7 @@ namespace Signal
         public void LevelFinished()
         {
             IsCurrentLevelFinished = true;
+            //IsPlaying = false; 
             Debug.Log("<<LevelFinished>>");
             StartCoroutine(LevelTransition());
         }
@@ -132,36 +124,44 @@ namespace Signal
         private IEnumerator LevelTransition()
         {
             Debug.LogError("Game Finished");
+            StartCoroutine(ActivaterCenterPoint());
+            IsPlaying = false;
             Time.timeScale = TIME_SCALE_MOTION;
             Signal.enabled = false;
             SignalCopy.enabled = false;
             yield return new WaitForSeconds(0.2f);
-            IsPlaying = false;
+            Time.timeScale = TIME_SCALE_DEFAULT;
             Signal.Reset();
             SignalCopy.Reset();
-            StartCoroutine(ActivaterCenterPoint());
-            Time.timeScale = TIME_SCALE_DEFAULT;
             Levels[Level].Hide();
-            yield return new WaitForSeconds(1.5f);
-            NextLevel();
+            yield return new WaitForSeconds(0.5f);
+            UIManager.Instance.ShowWinLoseAlert(CurrentLevelIsWon);
         }
 
-        private void NextLevel()
+        public void ShowLevelState(Constants.LevelState state)
         {
             IsCurrentLevelFinished = false;
-            Level++;
+
+            //if (state != Constants.LevelState.Load)
+            //    Levels[Level].Hide();
+
+            if (state == Constants.LevelState.Next)
+                Level++;
+
             UIManager.Instance.LevelText.text = Level.ToString();
             Levels[Level].Show();
         }
 
         private IEnumerator ActivaterCenterPoint()
         {
-            while (IsPlaying)
+            Debug.LogAssertion("IsPlaying : " + IsPlaying);
+            if(IsPlaying)
             {
+                Debug.Log("Girdi" );
                 yield return new WaitForSeconds(1.0f);
                 CenterPointCollider.gameObject.SetActive(true);
                 CenterPointCollider.isTrigger = false;
-                break;
+                //break;
             }
 
             if (!IsPlaying)

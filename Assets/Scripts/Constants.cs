@@ -16,5 +16,12 @@
             SignalBroker,
             SignalPlusser
         }
+
+        public enum LevelState
+        {
+            Load,
+            Retry,
+            Next
+        }
     }
 }
