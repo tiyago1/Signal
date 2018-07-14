@@ -56,8 +56,7 @@ namespace Signal
                 }
                 else
                 {
-                    GameManager.Instance.CurrentLevelIsWon = false;
-                    GameManager.Instance.LevelFinished();
+                    GameManager.Instance.LevelFinished(false);
                     Time.timeScale = GameManager.TIME_SCALE_MOTION;
                 }
             }
@@ -101,7 +100,7 @@ namespace Signal
         public void ResetSignalColor()
         {
             lerpValue = 1.0f;
-            SignalLevelImage.fillAmount = lerpValue;
+            SignalLevelImage.fillAmount = 1.0f;
             SetSignalLevelColor();
         }
 

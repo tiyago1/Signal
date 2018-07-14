@@ -128,8 +128,7 @@ namespace Signal
 
             if (!GameManager.Instance.IsCurrentLevelFinished && collision.collider.tag == "Target")
             {
-                GameManager.Instance.CurrentLevelIsWon = true;
-                GameManager.Instance.LevelFinished();
+                GameManager.Instance.LevelFinished(true);
             }
         }
 

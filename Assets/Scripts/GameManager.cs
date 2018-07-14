@@ -86,8 +86,9 @@ namespace Signal
 
         #region Public Methods
 
-        public void LevelFinished()
+        public void LevelFinished(bool currentLevelIsWon)
         {
+            GameManager.Instance.CurrentLevelIsWon = currentLevelIsWon;
             IsCurrentLevelFinished = true;
             //IsPlaying = false; 
             Debug.Log("<<LevelFinished>>");
